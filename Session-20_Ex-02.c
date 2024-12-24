@@ -10,13 +10,13 @@ struct Product
     int quantity;
 };
 
-void createProduct(struct Product product[100],int *size,float revenue);
+void createProduct(struct Product product[100],int *size,float *revenue);
 void displayProduct(struct Product product[100],int *size);
-void addProduct(struct Product product[100],struct Product newProduct,int *size,float revenue);
-void updateProduct(struct Product product[100],int *size,float revenue);
+void addProduct(struct Product product[100],struct Product newProduct,int *size,float *revenue);
+void updateProduct(struct Product product[100],int *size,float *revenue);
 void sortProduct(struct Product product[100],int *size);
 void searchProduct(struct Product product[100],int *size,char item[100]);
-void sellProduct(struct Product product[100],int *size,float revenue);
+void sellProduct(struct Product product[100],int *size,float *revenue);
 
 int main(){
     int choice,size = 0;
@@ -45,7 +45,7 @@ int main(){
         case 1:
             printf("Nhap so luong san pham : ");
             scanf("%d",&size);
-            createProduct(product,&size,revenue);
+            createProduct(product,&size,&revenue);
             break;
         case 2:
             if (size == 0)
@@ -57,7 +57,7 @@ int main(){
             }
             break;
         case 3:
-            addProduct(product,newProduct,&size,revenue);
+            addProduct(product,newProduct,&size,&revenue);
             break;
         case 4:
             if (size == 0)
@@ -65,7 +65,7 @@ int main(){
                 printf("Chua co san pham nao!\n");
             }
             else{
-                updateProduct(product,&size,revenue);
+                updateProduct(product,&size,&revenue);
             }
             break;
         case 5:
@@ -85,7 +85,7 @@ int main(){
             searchProduct(product,&size,item);
             break;
         case 7:
-            sellProduct(product,&size,revenue);
+            sellProduct(product,&size,&revenue);
             break;
         case 8:
             printf("%f\n",revenue);
@@ -100,7 +100,7 @@ int main(){
     } while (choice != 9);   
 }
 
-void createProduct(struct Product product[100],int *size,float revenue){
+void createProduct(struct Product product[100],int *size,float *revenue){
     for (int i = 0; i < *size; i++)
     {
         printf("Nhap thong tin san pham thu %d : \n",i+1);
@@ -117,39 +117,39 @@ void createProduct(struct Product product[100],int *size,float revenue){
         scanf("%f",&product[i].sellingPrice);
         printf("So luong : ");
         scanf("%d",&product[i].quantity);
-        revenue -= (product[i].quantity * product[i].importPrice);
+        *revenue -= (product[i].quantity * product[i].importPrice);
     }   
 }
 
 void displayProduct(struct Product product[100],int *size){
+    printf("Cac san pham hien co : \n");
     for (int i = 0; i < *size; i++)
     {
-        printf("\nThong tin san pham thu %d :\n",i+1);
-        printf("Ma san pham : %s\n",product[i].id);
-        printf("Ten san pham : %s\n",product[i].name);
-        printf("Gia ban : %.2f\n",product[i].sellingPrice);
-        printf("So luong : %d\n",product[i].quantity);
+        printf("%d, %s\n",i+1,product[i].name);
     }
 }
 
-void addProduct(struct Product product[100],struct Product newProduct,int *size,float revenue){
+void addProduct(struct Product product[100],struct Product newProduct,int *size,float *revenue){
+    printf("Nhap san pham moi : \n");
     printf("Ma san pham : ");
     fflush(stdin);
     fgets(newProduct.id,sizeof(newProduct.id),stdin);
     newProduct.id[strcspn(newProduct.id, "\n")] = '\0';
     printf("Ten san pham : ");
     fgets(newProduct.name,sizeof(newProduct.name),stdin);
-    newProduct.id[strcspn(newProduct.id, "\n")] = '\0';
+    newProduct.name[strcspn(newProduct.name, "\n")] = '\0';
     printf("Gia nhap : ");
     scanf("%f",&newProduct.importPrice);
     printf("Gia ban : ");
     scanf("%f",&newProduct.sellingPrice);
     printf("So luong : ");
     scanf("%d",&newProduct.quantity);
-    revenue -= (newProduct.quantity * newProduct.importPrice);
+    product[*size] = newProduct;
+    (*size)++;
+    *revenue -= (newProduct.quantity * newProduct.importPrice);
 }
 
-void updateProduct(struct Product product[100],int *size,float revenue){
+void updateProduct(struct Product product[100],int *size,float *revenue){
     int x;
     printf("Cac san pham hien co : \n");
     for (int i = 0; i < *size; i++)
@@ -177,7 +177,7 @@ void updateProduct(struct Product product[100],int *size,float revenue){
         scanf("%f",&product[x].sellingPrice);
         printf("So luong : ");
         scanf("%d",&product[x].quantity);
-        revenue -= (product[x].quantity * product[x].importPrice);
+        *revenue -= (product[x].quantity * product[x].importPrice);
     }
 }
 
@@ -248,7 +248,7 @@ void searchProduct(struct Product product[100],int *size,char item[100]){
     }
 }
 
-void sellProduct(struct Product product[100],int *size,float revenue){
+void sellProduct(struct Product product[100],int *size,float *revenue){
     int x,value;
     printf("Cac san pham hien co : \n");
     for (int i = 0; i < *size; i++)
@@ -257,7 +257,7 @@ void sellProduct(struct Product product[100],int *size,float revenue){
     }
     printf("Nhap san pham ban muon mua : ");
     scanf("%d",&x);
-    x++;
+    x--;
     if (product[x].quantity == 0)
     {
         printf("Da het hang!\n");
@@ -270,6 +270,6 @@ void sellProduct(struct Product product[100],int *size,float revenue){
     }
     else{
         product[x].quantity -= value;
-        revenue += (value * product[x].sellingPrice);
+        *revenue += (value * product[x].sellingPrice);
     }
 }
